@@ -1,0 +1,13 @@
+.product-grid {
+    text-align: center;
+}
+
+
+.product-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    justify-items: center;
+    background-color: transparent; /* No background color for the grid */
+}
+
