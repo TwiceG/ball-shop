@@ -73,7 +73,8 @@ const Product = ({ product }) => {
         className="product-image"
       />
       <h3>{product.name}</h3>
-      <p>{product.description}</p>
+      <p className="description">{product.description}</p>
+      <div className="description-tooltip" id="descriptionTooltip">{product.description}</div>
       <p>${price}</p>
       <div className="quantity-container">
         <label>Quantity:</label>
