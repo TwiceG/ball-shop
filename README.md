@@ -72,18 +72,15 @@ php setup.php
 
 - Installs the project dependencies with Composer:
 
-  ```
-  composer install
-  ```
+  `composer install`
 
 - Executes the Laravel migrations:
-  ```
-  php artisan migrate
-  ```
+
+  `php artisan migrate`
+
 - Seeds the database with initial data:
-  ```
-  php artisan seed
-  ```
+
+  `php artisan seed`
 
 Make sure all these commands are successfully executed.
 

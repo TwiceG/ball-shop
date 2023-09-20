@@ -2,61 +2,63 @@
 
 namespace App\Models\QueryRepositories;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
+use App\Models\User;
+use Carbon\Carbon;
 
 class UserRepository
 {
     public function register($name, $email, $hashedPassword)
     {
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => $hashedPassword,
+        ]);
 
-        $userId = DB::table('users')->insertGetId([
-                'name'=>$name,
-                'email'=>$email,
-                'password'=>$hashedPassword,
-            ]);
-
-
-        return $userId;
-
+        return $user->id;
     }
 
     public function changePassword($email, $hashedNewPassword)
     {
-        return DB::table('users')
-            ->where('email', $email)
-            ->update(['password'=> $hashedNewPassword]);
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            $user->password = $hashedNewPassword;
+            $user->updated_at = Carbon::now();
+            $user->save();
+            return true;
+        }
+        return false;
     }
 
     public function getUserByEmail($email)
     {
-        return DB::table('users')
-            ->where('email', $email)
-            ->first();
+        return User::where('email', $email)->first();
     }
 
     public function getUserByToken($token)
     {
-        return DB::table('users')
-            ->where('reset_token', $token)
-            ->first();
+        return User::where('reset_token', $token)->first();
     }
 
     public function clearResetToken($email)
     {
-        DB::table('users')
-            ->where('email', $email)
-            ->update(['reset_token' => null]);
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            $user->reset_token = null;
+            $user->save();
+            return true;
+        }
+        return false;
     }
-
 
     public function addVerifyTokenToUser($token, $email)
     {
-        return DB::table('users')
-            ->where('email', $email)
-            ->update(['reset_token'=> $token]);
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            $user->reset_token = $token;
+            $user->save();
+            return true;
+        }
+        return false;
     }
 }
-
-

@@ -2,14 +2,13 @@
 
 namespace App\Models\QueryRepositories;
 
-use Illuminate\Support\Facades\DB;
-
+use App\Models\Product;
 
 class ProductRepository
 {
     public function createProduct($name, $description, $price, $image)
     {
-        return DB::table('products')->insert([
+        return Product::create([
             'name' => $name,
             'description' => $description,
             'price' => $price,
@@ -19,43 +18,51 @@ class ProductRepository
 
     public function getProductById($id)
     {
-        return DB::table('products')->find($id);
+        return Product::find($id);
     }
 
     public function getAllProducts()
     {
-        return DB::table('products')->get();
+        return Product::all();
     }
 
     public function updateProduct($id, $name, $description, $price, $image)
     {
-        $dataToUpdate = [];
+        $product = Product::find($id);
 
-        if ($name !== null) {
-            $dataToUpdate['name'] = $name;
+        if ($product) {
+            if ($name !== null) {
+                $product->name = $name;
+            }
+
+            if ($description !== null) {
+                $product->description = $description;
+            }
+
+            if ($price !== null) {
+                $product->price = $price;
+            }
+
+            if ($image !== null) {
+                $product->image = $image;
+            }
+
+            $product->save();
+            return $product;
         }
 
-        if ($description !== null) {
-            $dataToUpdate['description'] = $description;
-        }
-
-        if ($price !== null) {
-            $dataToUpdate['price'] = $price;
-        }
-
-        if ($image !== null) {
-            $dataToUpdate['image'] = $image;
-        }
-
-        return DB::table('products')
-            ->where('id', $id)
-            ->update($dataToUpdate);
+        return null;
     }
-
 
     public function deleteProduct($id)
     {
-        return DB::table('products')->where('id', $id)->delete();
-    }
+        $product = Product::find($id);
 
+        if ($product) {
+            $product->delete();
+            return true;
+        }
+
+        return false;
+    }
 }

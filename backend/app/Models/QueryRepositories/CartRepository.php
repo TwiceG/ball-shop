@@ -2,14 +2,13 @@
 
 namespace App\Models\QueryRepositories;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Models\Cart;
 
 class CartRepository
 {
     public function addToCart($userId, $productId, $quantity, $price)
     {
-        return DB::table('carts')->insert([
+        return Cart::create([
             'user_id' => $userId,
             'product_id' => $productId,
             'price' => $price,
@@ -19,34 +18,42 @@ class CartRepository
 
     public function getCartItemsByUser($userId)
     {
-        return DB::table('carts')
+        return Cart::where('user_id', $userId)
             ->join('products', 'carts.product_id', '=', 'products.id')
-            ->where('carts.user_id', $userId)
             ->select('carts.id', 'products.name', 'products.price', 'carts.quantity')
             ->get();
     }
+
     public function getCartItem($productId, $userId)
     {
-        return DB::table('carts')
-            ->where('user_id', $userId)
+        return Cart::where('user_id', $userId)
             ->where('product_id', $productId)
             ->first();
     }
 
-
     public function updateCartItem($cartId, $quantity, $price)
     {
-        return DB::table('carts')
-            ->where('id', $cartId)
-            ->update([
-                'quantity' => $quantity,
-                'price' => $price,
-            ]);
+        $cart = Cart::find($cartId);
+
+        if ($cart) {
+            $cart->quantity = $quantity;
+            $cart->price = $price;
+            $cart->save();
+            return $cart;
+        }
+
+        return null;
     }
 
     public function removeCartItem($cartId)
     {
-        return DB::table('carts')->where('id', $cartId)->delete();
-    }
+        $cart = Cart::find($cartId);
 
+        if ($cart) {
+            $cart->delete();
+            return true;
+        }
+
+        return false;
+    }
 }
